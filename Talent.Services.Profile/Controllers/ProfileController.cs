@@ -445,24 +445,22 @@ namespace Talent.Services.Profile.Controllers
             {
                 var result = (await _profileService.GetTalentSnapshotList(_userAppContext.CurrentUserId, false, feed.Position, feed.Number)).ToList();
 
-                //Add dummy data for demonstration
-                if (result.FirstOrDefault(x => x.Id == "123456") == null)
-                {
-                    result.Insert(0, new TalentSnapshotViewModel
-                    {
-                        Id = "123456",
-                        Name = "Zack Yang",
-                        linkedAccounts = new LinkedAccounts { Github = "https://github.com/", LinkedIn = "https://www.linkedin.com" },
-                        PhotoUrl = "https://react.semantic-ui.com/images/avatar/large/daniel.jpg",
-                        VideoUrl = "https://www.youtube.com/embed/Ke90Tje7VS0",
-                        CVUrl = "http://www.pdf995.com/samples/pdf.pdf",
-                        CurrentEmployer = "MVP Studio",
-                        CurrentPosition = "Developer",
-                        VisaStatus = "Work visa",
-                        Skills = new List<string>() { "C#", "Java", "Python" }
-                    });
-                }
-
+                // Dummy talent to fill out the list once we run out of data
+                //if (result.Count == 0)
+                //{
+                //    result.Add(
+                //            new Models.TalentSnapshotViewModel
+                //            {
+                //                CurrentEmployment = "Software Developer at XYZ",
+                //                Level = "Junior",
+                //                Name = "Dummy User...",
+                //                PhotoId = "",
+                //                Skills = new List<string> { "C#", ".Net Core", "Javascript", "ReactJS", "PreactJS" },
+                //                Summary = "Veronika Ossi is a set designer living in New York who enjoys kittens, music, and partying.",
+                //                Visa = "Citizen"
+                //            }
+                //        );
+                //}
                 return Json(new { Success = true, Data = result });
             }
             catch (Exception e)

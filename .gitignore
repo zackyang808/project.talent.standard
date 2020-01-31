@@ -9,15 +9,6 @@
 **/obj/
 **/bin/
 **/node_modules/
-/App/Talent.App.WebApp/wwwroot/js/react\dist
 
 # Ignore personal files
 **/*.user
-/App/Talent.App.WebApp/Properties/PublishProfiles
-/Talent.Services.Identity/Properties/PublishProfiles
-/Talent.Services.Listing/Properties/PublishProfiles
-/Talent.Services.Profile/Properties/PublishProfiles
-/zack-advanced-m1-web.PublishSettings
-/zack-advanced-m1-talent.PublishSettings
-/zack-advanced-m1-profile.PublishSettings
-/zack-advanced-m1-identity.PublishSettings
