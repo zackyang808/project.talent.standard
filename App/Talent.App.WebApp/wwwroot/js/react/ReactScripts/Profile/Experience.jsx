@@ -63,7 +63,7 @@ export default class Experience extends React.Component {
         this.setState({ showAddNewSection: false });
     }
 
-    addNew(e) {debugger;
+    addNew(e) {
         e.preventDefault();
         const ObjectID = require("bson-objectid");
         const newExperience = Object.assign({}, this.state.newExperience, { id: ObjectID().toHexString() });
@@ -79,7 +79,7 @@ export default class Experience extends React.Component {
         this.setState({ showAddNewSection: false });
     }
 
-    edit(e, experience) {debugger;
+    edit(e, experience) {
         e.preventDefault();
         this.setState({
             modifingExperience:

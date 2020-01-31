@@ -47,7 +47,7 @@ export default class PhotoUpload extends Component {
     updateProfilePhoto(formData) {
         var cookies = Cookies.get('talentAuthToken');
         $.ajax({
-            url: 'http://localhost:60290/profile/profile/updateProfilePhoto',
+            url: 'http://zack-advanced-m1-profile.azurewebsites.net/profile/profile/updateProfilePhoto',
             headers: {
                 'Authorization': 'Bearer ' + cookies
                 // 'Content-Type': 'multipart/form-data'
