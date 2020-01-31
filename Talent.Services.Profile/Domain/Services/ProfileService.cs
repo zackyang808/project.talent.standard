@@ -12,6 +12,7 @@ using Talent.Services.Profile.Models;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Talent.Common.Security;
+using Microsoft.EntityFrameworkCore;
 
 namespace Talent.Services.Profile.Domain.Services
 {
@@ -75,7 +76,7 @@ namespace Talent.Services.Profile.Domain.Services
                     VideoName = profile.VideoName,
                     VideoUrl = string.IsNullOrWhiteSpace(profile.VideoName) ? "" : await _fileService.GetFileURL(profile.VideoName, FileType.UserVideo),
                     CvName = profile.CvName,
-                    CvUrl = string.IsNullOrWhiteSpace(profile.CvName) ? "" : await _fileService.GetFileURL(profile.CvName, FileType.UserVideo),
+                    CvUrl = string.IsNullOrWhiteSpace(profile.CvName) ? "" : await _fileService.GetFileURL(profile.CvName, FileType.UserCV),
                     Summary = profile.Summary,
                     Description = profile.Description,
                     LinkedAccounts = profile.LinkedAccounts,
@@ -84,7 +85,7 @@ namespace Talent.Services.Profile.Domain.Services
                     Skills = profile.Skills.Select(s => ViewModelFromSkill(s)).ToList(),
                     Education = profile.Education.Select(e => ViewModelFromEducation(e)).ToList(),
                     Certifications = profile.Certifications.Select(c => ViewModelFromCertification(c)).ToList(),
-                    Experience = profile.Experience.Select(e => ViewModelFromExperience(e)).ToList()
+                    Experience = profile.Experience.Select(e => ViewModelFromExperience(e)).OrderByDescending(e => e.End).ToList()
                 };
                 return result;
             }
@@ -463,8 +464,30 @@ namespace Talent.Services.Profile.Domain.Services
 
         public async Task<IEnumerable<TalentSnapshotViewModel>> GetTalentSnapshotList(string employerOrJobId, bool forJob, int position, int increment)
         {
-            //Your code here;
-            throw new NotImplementedException();
+            List<TalentSnapshotViewModel> result = new List<TalentSnapshotViewModel>();
+
+            List<User> talents = _userRepository.GetQueryable().Skip(position * increment).Take(increment).ToList();
+            foreach (var talent in talents)
+            {
+                UserExperience experience = talent.Experience.OrderByDescending(e => e.Start).FirstOrDefault();
+
+                TalentSnapshotViewModel model = new TalentSnapshotViewModel
+                {
+                    Id = talent.Id,
+                    Name = $"{talent.FirstName} {talent.MiddleName} {talent.LastName}",
+                    linkedAccounts = talent.LinkedAccounts,
+                    PhotoUrl = talent.ProfilePhotoUrl,
+                    VideoUrl = string.IsNullOrWhiteSpace(talent.VideoName) ? "" : await _fileService.GetFileURL(talent.VideoName, FileType.UserVideo),
+                    CVUrl = string.IsNullOrWhiteSpace(talent.CvName) ? "" : await _fileService.GetFileURL(talent.CvName, FileType.UserCV),
+                    CurrentEmployer = experience == null ? "" : experience.Company,
+                    CurrentPosition = experience == null ? "" : experience.Position,
+                    VisaStatus = talent.VisaStatus,
+                    Skills = talent.Skills.Select(s => s.Skill).ToList()
+                };
+                result.Add(model);
+            }
+
+            return result;
         }
 
         public async Task<IEnumerable<TalentSnapshotViewModel>> GetTalentSnapshotList(IEnumerable<string> ids)
