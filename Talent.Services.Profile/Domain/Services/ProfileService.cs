@@ -463,8 +463,30 @@ namespace Talent.Services.Profile.Domain.Services
 
         public async Task<IEnumerable<TalentSnapshotViewModel>> GetTalentSnapshotList(string employerOrJobId, bool forJob, int position, int increment)
         {
-            //Your code here;
-            throw new NotImplementedException();
+            List<TalentSnapshotViewModel> result = new List<TalentSnapshotViewModel>();
+
+            List<User> talents = await Task.FromResult(_userRepository.GetQueryable().Skip(position * increment).Take(increment).ToList());
+            foreach (var talent in talents)
+            {
+                UserExperience experience = talent.Experience.OrderByDescending(e => e.Start).FirstOrDefault();
+
+                TalentSnapshotViewModel model = new TalentSnapshotViewModel
+                {
+                    Id = talent.Id,
+                    Name = $"{talent.FirstName} {talent.MiddleName} {talent.LastName}",
+                    linkedAccounts = talent.LinkedAccounts,
+                    PhotoUrl = talent.ProfilePhotoUrl,
+                    VideoUrl = string.IsNullOrWhiteSpace(talent.VideoName) ? "" : await _fileService.GetFileURL(talent.VideoName, FileType.UserVideo),
+                    CVUrl = string.IsNullOrWhiteSpace(talent.CvName) ? "" : await _fileService.GetFileURL(talent.CvName, FileType.UserCV),
+                    CurrentEmployer = experience == null ? "" : experience.Company,
+                    CurrentPosition = experience == null ? "" : experience.Position,
+                    VisaStatus = talent.VisaStatus,
+                    Skills = talent.Skills.Select(s => s.Skill).ToList()
+                };
+                result.Add(model);
+            }
+
+            return result;
         }
 
         public async Task<IEnumerable<TalentSnapshotViewModel>> GetTalentSnapshotList(IEnumerable<string> ids)
